@@ -16,12 +16,12 @@ add_executable(asteroids)
 
 set(SOURCE_CODE_DIR ${CMAKE_SOURCE_DIR}/src/)
 set(INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include/)
+set(VENDORS_DIR ${CMAKE_SOURCE_DIR}/vendors/)
 
 # COMMON
 set(COMMON_CODE_DIR ${SOURCE_CODE_DIR}common/)
 
 set(COMMON_SOURCES
-    ${COMMON_CODE_DIR}petrichor_math.cpp
     ${COMMON_CODE_DIR}petrichor_mem.cpp
 )
 
@@ -45,6 +45,7 @@ if (WIN32)
 
     set(PLATFORM_SOURCES
             ${PLATFORM_CODE_DIR}win32/win32_main.cpp
+            ${PLATFORM_CODE_DIR}win32/win32_time.cpp
     )
 
     add_compile_definitions(asteroids
@@ -80,6 +81,16 @@ endif()
 # RUNTIME
 set(GAME_CODE_DIR ${SOURCE_CODE_DIR}game/)
 
+# VENDORS
+set(VENDOR_SOURCES
+    ${CORE_CODE_DIR}vendor_impl.cpp
+)
+
+set(VENDOR_INCLUDE
+        ${VENDORS_DIR}
+        ${VENDORS_DIR}glm
+)
+
 # =========================================
 
 target_include_directories(asteroids
@@ -88,6 +99,9 @@ target_include_directories(asteroids
         ${COMMON_CODE_DIR}
         ${CORE_CODE_DIR}
         ${GAME_CODE_DIR}
+    PRIVATE
+        ${VENDOR_INCLUDE}
+        ${Vulkan_INCLUDE_DIRS}
 )
 
 target_sources(asteroids
@@ -96,6 +110,7 @@ target_sources(asteroids
         ${COMMON_SOURCES}
         ${VULKAN_SOURCES}
         ${DX12_SOURCES}
+        ${VENDOR_SOURCES}
 )
 
 find_package(Vulkan REQUIRED)
@@ -108,8 +123,6 @@ target_compile_definitions(asteroids PRIVATE
         ENGINE_VER_MINOR=${ENGINE_VER_MINOR}
         ENGINE_VER_PATCH=${ENGINE_VER_PATCH}
 )
-
-target_include_directories(asteroids PRIVATE ${Vulkan_INCLUDE_DIRS})
 
 target_link_libraries(asteroids
         PRIVATE

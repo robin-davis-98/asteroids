@@ -1,39 +1,36 @@
 #ifndef PET_MATH_H
 #define PET_MATH_H
 
-struct Vec2 {
-    union {
-        struct { float x, y; };
-        struct { float u ,v; };
-        float elements[2];
-    };
-};
+#define GLM_FORCE_RADIANS
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
-struct Vec3 {
-    union {
-        struct { float x, y, z; };
-        struct { float r, g, b; };
-        float elements[3];
-    };
-};
+using Vec2 = glm::vec2;
+using Vec3 = glm::vec3;
+using Vec4 = glm::vec4;
+using Mat4 = glm::mat4;
+using Quat = glm::quat;
 
-struct Vec4 {
-    union {
-        struct { float x, y, z, w; };
-        struct { float r, g, b, a; };
-        float elements[4];
-    };
-};
+inline Mat4 perspective(float fov, float aspect, float near, float far) {
+    return glm::perspective(glm::radians(fov), aspect, near, far);
+}
 
-struct Mat4
-{
-    float m[16];
-};
+inline Mat4 ortho(float left, float right, float bottom, float top, float near, float far) {
+    Mat4 result = glm::ortho(left, right, bottom, top, near, far);
 
-Mat4 mat4_orthographic(float left, float right, float bottom, float top, float near, float far);
-Mat4 mat4_perspective(float fov, float aspect, float near, float far);
-Mat4 mat4_lookat(Vec3 eye, Vec3 target, Vec3 up);
-Mat4 mat4_mul(Mat4 a, Mat4 b);
-void mat4_translate(Mat4* m, float x, float y, float z);
+    result[1][1] *= -1;
+
+    return result;
+}
+
+inline Mat4 look_at(Vec3 eye, Vec3 center, Vec3 up) {
+    return glm::lookAt(eye, center, up);
+}
+
+inline const float* get_raw(const Mat4& m) {
+    return glm::value_ptr(m);
+}
 
 #endif

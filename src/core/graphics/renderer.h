@@ -28,6 +28,13 @@ struct Render_Functions {
     void (*shutdown)(struct Renderer* r);
 };
 
+// VULKAN FUNCTIONS
 void vulkan_init(Renderer* r, VkSurfaceKHR surface);
+void vulkan_create_instance(Renderer* r, const char** extensions, uint32_t extension_count);
+
+// DX12 FUNCTIONS
+#if defined (PLATFORM_WINDOWS)
+
+#endif
 
 #endif

@@ -1,35 +1,34 @@
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
+#include "win32_common.h"
 #include <petrichor_mem.h>
+#include <petrichor_time.h>
 #include <graphics/renderer.h>
 #include "game.h"
 
 static bool g_Running = true;
 
-struct Platform_Memory_Block {
-    void* base;
-    size_t size;
-};
-
-Platform_Memory_Block platform_allocate_memory(size_t size) {
-    Platform_Memory_Block block = {};
-    block.size = size;
-
-    block.base = VirtualAlloc(0, size, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
-    return block;
-}
-
 void win32_init_renderer(Renderer* r, HWND hwnd, HINSTANCE instance, bool using_dx12) {
     if (using_dx12) {
         //dx12_init(r, hwnd, instance);
     } else {
-        VkWin32SurfaceCreateInfoKHR surface_info = {VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR};
+        const char* extensions[] = {
+            VK_KHR_SURFACE_EXTENSION_NAME,
+            VK_KHR_WIN32_SURFACE_EXTENSION_NAME
+        };
+        uint32_t extension_count = sizeof(extensions) / sizeof(extensions[0]);
+
+        vulkan_create_instance(r, extensions, extension_count);
+
+        VkWin32SurfaceCreateInfoKHR surface_info = {
+            VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR
+        };
         surface_info.hwnd = hwnd;
         surface_info.hinstance = instance;
 
         VkSurfaceKHR surface;
-        vkCreateWin32SurfaceKHR(r->backend.vulkan.instance, &surface_info, nullptr, &surface);
-
+        if (vkCreateWin32SurfaceKHR(r->backend.vk.instance, &surface_info, nullptr, &surface) != VK_SUCCESS) {
+            // Handle error: Surface creation failed
+            return;
+        }
         vulkan_init(r, surface);
     }
 }
@@ -90,6 +89,9 @@ int WINAPI WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR cmd_line, 
     UpdateWindow(hwnd);
 
     win32_init_renderer(renderer, hwnd, instance, use_dx12);
+
+    Timer game_timer = {};
+    time_init(&game_timer);
 
     while (g_Running) {
         MSG msg;

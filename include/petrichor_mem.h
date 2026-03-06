@@ -1,7 +1,15 @@
 #ifndef PET_MEM_H
 #define PET_MEM_H
+
 #include <stdint.h>
 #include <stddef.h>
+
+struct Platform_Memory_Block {
+    void* base;
+    size_t size;
+};
+
+Platform_Memory_Block platform_allocate_memory(size_t size);
 
 struct Arena {
     uint8_t* base;
