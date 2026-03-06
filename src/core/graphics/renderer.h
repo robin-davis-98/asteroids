@@ -25,12 +25,12 @@ struct Render_Functions {
     void (*begin_frame)(struct Renderer* r);
     void (*end_frame)(struct Renderer* r);
     void (*on_resize)(struct Renderer* r);
-    void (*shutdown)(struct Renderer* r);
 };
 
 // VULKAN FUNCTIONS
 void vulkan_init(Renderer* r, VkSurfaceKHR surface);
 void vulkan_create_instance(Renderer* r, const char** extensions, uint32_t extension_count);
+void vulkan_shutdown(Renderer* r);
 
 // DX12 FUNCTIONS
 #if defined (PLATFORM_WINDOWS)

@@ -10,6 +10,7 @@ struct Platform_Memory_Block {
 };
 
 Platform_Memory_Block platform_allocate_memory(size_t size);
+void platform_free_memory(Platform_Memory_Block block);
 
 struct Arena {
     uint8_t* base;

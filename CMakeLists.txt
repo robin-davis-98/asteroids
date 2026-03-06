@@ -1,11 +1,6 @@
 cmake_minimum_required(VERSION 3.20)
 project(asteroids)
 
-set(GAME_NAME "Asteroids")
-set(GAME_VER_MAJOR 0)
-set(GAME_VER_MINOR 1)
-set(GAME_VER_PATCH 0)
-
 set(ENGINE_VER_MAJOR 2)
 set(ENGINE_VER_MINOR 1)
 set(ENGINE_VER_PATCH 0)
@@ -45,7 +40,9 @@ if (WIN32)
 
     set(PLATFORM_SOURCES
             ${PLATFORM_CODE_DIR}win32/win32_main.cpp
+            ${PLATFORM_CODE_DIR}win32/win32_mem.cpp
             ${PLATFORM_CODE_DIR}win32/win32_time.cpp
+            ${PLATFORM_CODE_DIR}win32/win32_renderer.cpp
     )
 
     add_compile_definitions(asteroids
@@ -115,10 +112,6 @@ target_sources(asteroids
 
 find_package(Vulkan REQUIRED)
 target_compile_definitions(asteroids PRIVATE
-        GAME_NAME=\"${GAME_NAME}\"
-        GAME_VER_MAJOR=${GAME_VER_MAJOR}
-        GAME_VER_MINOR=${GAME_VER_MINOR}
-        GAME_VER_PATCH=${GAME_VER_PATCH}
         ENGINE_VER_MAJOR=${ENGINE_VER_MAJOR}
         ENGINE_VER_MINOR=${ENGINE_VER_MINOR}
         ENGINE_VER_PATCH=${ENGINE_VER_PATCH}

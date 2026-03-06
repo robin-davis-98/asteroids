@@ -6,33 +6,6 @@
 
 static bool g_Running = true;
 
-void win32_init_renderer(Renderer* r, HWND hwnd, HINSTANCE instance, bool using_dx12) {
-    if (using_dx12) {
-        //dx12_init(r, hwnd, instance);
-    } else {
-        const char* extensions[] = {
-            VK_KHR_SURFACE_EXTENSION_NAME,
-            VK_KHR_WIN32_SURFACE_EXTENSION_NAME
-        };
-        uint32_t extension_count = sizeof(extensions) / sizeof(extensions[0]);
-
-        vulkan_create_instance(r, extensions, extension_count);
-
-        VkWin32SurfaceCreateInfoKHR surface_info = {
-            VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR
-        };
-        surface_info.hwnd = hwnd;
-        surface_info.hinstance = instance;
-
-        VkSurfaceKHR surface;
-        if (vkCreateWin32SurfaceKHR(r->backend.vk.instance, &surface_info, nullptr, &surface) != VK_SUCCESS) {
-            // Handle error: Surface creation failed
-            return;
-        }
-        vulkan_init(r, surface);
-    }
-}
-
 LRESULT CALLBACK win32_event_callback(HWND handle, UINT msg, WPARAM wParam, LPARAM lParam) {
     switch (msg) {
         case WM_CLOSE: {
@@ -75,7 +48,7 @@ int WINAPI WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR cmd_line, 
     HWND hwnd = CreateWindowExA(
         0,
         wc.lpszClassName,
-        "Petrichor Engine",
+        GAME_NAME,
         WS_OVERLAPPEDWINDOW,
         CW_USEDEFAULT, CW_USEDEFAULT,
         800, 600,
@@ -103,4 +76,7 @@ int WINAPI WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR cmd_line, 
             DispatchMessageA(&msg);
         }
     }
+
+    win32_shutdown_renderer(renderer, use_dx12);
+    platform_free_memory(main_mem);
 }

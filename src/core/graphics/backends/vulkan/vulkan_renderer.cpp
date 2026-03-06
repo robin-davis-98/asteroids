@@ -1,18 +1,19 @@
 #include "vulkan_renderer.h"
+#include "game.h"
 #include <graphics/renderer.h>
 
 void vulkan_create_instance(Renderer* r, const char** extensions, uint32_t extension_count) {
     Vulkan_Context* vk = &r->backend.vk;
 
     uint32_t engine_version = VK_MAKE_API_VERSION(0, ENGINE_VER_MAJOR, ENGINE_VER_MINOR, ENGINE_VER_PATCH);
-    uint32_t game_version   = VK_MAKE_API_VERSION(0, GAME_VER_MAJOR,   GAME_VER_MINOR,   GAME_VER_PATCH);
+    uint32_t game_version   = VK_MAKE_API_VERSION(0, GAME_VERSION_MAJOR, GAME_VERSION_MINOR, GAME_VERSION_PATCH);
 
     VkApplicationInfo app_info = { VK_STRUCTURE_TYPE_APPLICATION_INFO };
     app_info.pApplicationName = GAME_NAME;
     app_info.applicationVersion = game_version;
     app_info.pEngineName = "Petrichor";
     app_info.engineVersion = engine_version;
-    app_info.apiVersion = VK_API_VERSION_1_2;
+    app_info.apiVersion = VK_API_VERSION_1_0;
 
     VkInstanceCreateInfo create_info = { VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO };
     create_info.pApplicationInfo = &app_info;
@@ -49,4 +50,21 @@ void vulkan_init(Renderer* r, VkSurfaceKHR surface) {
     }
 
     scratch_end(temporary_mem);
+}
+
+void vulkan_shutdown(Renderer* r) {
+    Vulkan_Context* vk = &r->backend.vk;
+
+    if (vk->device != VK_NULL_HANDLE) {
+        vkDeviceWaitIdle(vk->device);
+        vkDestroyDevice(vk->device, NULL);
+    }
+
+    if (vk->surface != VK_NULL_HANDLE) {
+        vkDestroySurfaceKHR(vk->instance, vk->surface, NULL);
+    }
+
+    if (vk->instance != VK_NULL_HANDLE) {
+        vkDestroyInstance(vk->instance, NULL);
+    }
 }
