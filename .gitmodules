@@ -1,0 +1,9 @@
+[submodule "vendors/glm"]
+	path = vendors/glm
+	url = https://github.com/g-truc/glm.git
+[submodule "vendors/stb"]
+	path = vendors/stb
+	url = https://github.com/nothings/stb.git
+[submodule "vendors/miniaudio"]
+	path = vendors/miniaudio
+	url = https://github.com/mackron/miniaudio.git
